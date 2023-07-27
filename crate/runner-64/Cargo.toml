@@ -1,0 +1,14 @@
+[package]
+name = "runner-64"
+version = "0.1.0"
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+process-hollow = { path = "../process-hollow" }
+
+[lib]
+name = "runner"
+path = "src/lib.rs"
+crate-type = ["rlib", "dylib"]

@@ -17,6 +17,7 @@ members = [
     "crate/process-hollow",
     "crate/wuhu",
     "crate/yura",
+    "crate/runner-64",
 ]
 
 exclude = [
